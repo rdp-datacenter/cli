@@ -1,0 +1,179 @@
+name: Publish to NPM
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run build
+
+      - name: Test build output
+        run: |
+          if [ ! -f "dist/index.js" ]; then
+            echo "Build failed: dist/index.js not found"
+            exit 1
+          fi
+          echo "Build successful!"
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          # Get the current version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Check if this version exists on NPM
+          if npm view create-rdp-app@$CURRENT_VERSION version 2>/dev/null; then
+            echo "Version $CURRENT_VERSION already exists on NPM"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "Version $CURRENT_VERSION is new"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Publish to NPM
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.version-check.outputs.should_publish == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version-check.outputs.version }}
+          release_name: Release v${{ steps.version-check.outputs.version }}
+          body: |
+            ## Changes in v${{ steps.version-check.outputs.version }}
+            
+            ### 🚀 Installation
+            ```bash
+            npx create-rdp-app@latest
+            ```
+            
+            ### 📦 Global Installation
+            ```bash
+            npm install -g create-rdp-app@${{ steps.version-check.outputs.version }}
+            ```
+            
+            ### ✨ Features
+            - Interactive Next.js project setup
+            - shadcn/ui integration with Tailwind CSS v4 support
+            - NextAuth.js authentication setup
+            - Turbopack support for faster development
+            - Multi-package manager support (npm, yarn, pnpm, bun)
+            - TypeScript and modern tooling ready
+            
+            ### 🎯 What's New
+            - Latest updates and improvements
+            - Enhanced compatibility with Next.js 15
+            - Better error handling and user experience
+            
+            ### 📚 Usage
+            Simply run the command and follow the interactive prompts:
+            ```bash
+            npx create-rdp-app
+            ```
+            
+            ### 🐛 Bug Fixes
+            - Improved Tailwind CSS v4 detection
+            - Better project structure handling
+            - Enhanced shadcn/ui setup process
+            
+            ---
+            
+            **Full Changelog**: https://github.com/yourusername/create-rdp-app/commits/v${{ steps.version-check.outputs.version }}
+          draft: false
+          prerelease: false
+
+      - name: Post-publish summary
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: |
+          echo "🎉 Successfully published create-rdp-app@${{ steps.version-check.outputs.version }}"
+          echo ""
+          echo "📦 NPM Package: https://www.npmjs.com/package/create-rdp-app"
+          echo "🚀 Usage: npx create-rdp-app@latest"
+          echo "📋 Release: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.version-check.outputs.version }}"
+          echo ""
+          echo "✅ Package is now available for users worldwide!"
+
+      - name: Skip publish notification
+        if: steps.version-check.outputs.should_publish == 'false'
+        run: |
+          echo "⏭️  Skipping publish - version ${{ steps.version-check.outputs.version }} already exists on NPM"
+          echo "💡 To publish a new version:"
+          echo "   1. Update version in package.json (npm version patch/minor/major)"
+          echo "   2. Commit and push changes"
+          echo "   3. The workflow will automatically publish the new version"
+
+  # Optional: Notify on Discord/Slack about new releases
+  notify:
+    needs: [test, publish]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notification
+        run: |
+          echo "🔔 Workflow completed for create-rdp-app"
+          echo "📋 Repository: ${{ github.repository }}"
+          echo "🌟 Commit: ${{ github.sha }}"
+          echo "👤 Author: ${{ github.actor }}"
