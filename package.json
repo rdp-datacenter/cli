@@ -1,8 +1,8 @@
 {
   "name": "create-rdp-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
-  "description": "A CLI tool to generate Next.js projects with optional features",
+  "description": "A CLI tool to create Next.js projects with shadcn/ui, NextAuth.js, and more",
   "main": "dist/index.js",
   "bin": {
     "create-rdp-app": "./dist/index.js"
@@ -21,11 +21,15 @@
     "shadcn",
     "nextauth",
     "typescript",
-    "turbopack"
+    "turbopack",
+    "tailwind",
+    "create-app",
+    "scaffolding"
   ],
-  "author": "RDP Datacenter",
+  "author": "RDP Datacenter <noc@rdpdatacenter.in>",
   "license": "MIT",
   "dependencies": {
+    "inquirer": "^8.2.6",
     "fs-extra": "^11.3.0"
   },
   "devDependencies": {
@@ -41,10 +45,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/nextjs-generator.git"
+    "url": "https://github.com/rdp-datacenter/cli.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/nextjs-generator/issues"
+    "url": "https://github.com/rdp-datacenter/cli/issues"
   },
-  "homepage": "https://github.com/yourusername/nextjs-generator#readme"
+  "homepage": "https://github.com/rdp-datacenter/cli#readme"
 }
