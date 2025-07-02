@@ -11,6 +11,12 @@ dist/
 build/
 *.tsbuildinfo
 
+# Lock files (for CLI tools)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
 # Runtime data
 pids
 *.pid
