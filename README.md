@@ -1,4 +1,4 @@
-# 🚀 create-rdp-app
+# 🚀 RDP CLI
 
 A powerful CLI tool to quickly scaffold Next.js projects with popular features like shadcn/ui, NextAuth.js, and Turbopack. Built with TypeScript and designed to work seamlessly with Next.js 15 and Tailwind CSS v4.
 

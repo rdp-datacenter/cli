@@ -90,6 +90,106 @@ NEXTAUTH_URL=http://localhost:3000
   }
 }
 
+// Helper to create theme provider component
+export function createThemeProvider(useSrcDir: boolean, useTypeScript: boolean): void {
+  const baseDir = useSrcDir ? "src" : "";
+  const fileExtension = useTypeScript ? "tsx" : "jsx";
+  
+  const componentsDir = path.join(process.cwd(), baseDir, "components");
+  fs.ensureDirSync(componentsDir);
+  
+  const themeProviderContent = useTypeScript ? 
+    `"use client"
+ 
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
+ 
+export function ThemeProvider({
+  children,
+  ...props
+}: React.ComponentProps<typeof NextThemesProvider>) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+}` :
+    `"use client"
+ 
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
+ 
+export function ThemeProvider({ children, ...props }) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+}`;
+  
+  fs.writeFileSync(
+    path.join(componentsDir, `theme-provider.${fileExtension}`), 
+    themeProviderContent
+  );
+  
+  console.log(chalk.green("✅ Created theme provider component"));
+}
+
+// Helper to update layout.tsx with theme provider
+export function updateLayoutWithThemeProvider(useSrcDir: boolean, useTypeScript: boolean): void {
+  const baseDir = useSrcDir ? "src" : "";
+  const fileExtension = useTypeScript ? "tsx" : "jsx";
+  const layoutPath = path.join(process.cwd(), baseDir, "app", `layout.${fileExtension}`);
+  
+  if (!fs.existsSync(layoutPath)) {
+    console.log(chalk.yellow("⚠️  Layout file not found, skipping theme provider integration"));
+    return;
+  }
+  
+  let layoutContent = fs.readFileSync(layoutPath, "utf8");
+  
+  // Check if ThemeProvider is already imported
+  if (layoutContent.includes("ThemeProvider")) {
+    console.log(chalk.yellow("⚠️  ThemeProvider already exists in layout"));
+    return;
+  }
+  
+  // Add import for ThemeProvider
+  const importStatement = 'import { ThemeProvider } from "@/components/theme-provider"';
+  
+  // Find where to insert the import (after existing imports)
+  const importRegex = /^import.*from.*$/gm;
+  const imports = layoutContent.match(importRegex) || [];
+  
+  if (imports.length > 0) {
+    const lastImport = imports[imports.length - 1];
+    const lastImportIndex = layoutContent.indexOf(lastImport) + lastImport.length;
+    layoutContent = 
+      layoutContent.slice(0, lastImportIndex) + 
+      '\n' + importStatement + 
+      layoutContent.slice(lastImportIndex);
+  } else {
+    // No imports found, add at the top
+    layoutContent = importStatement + '\n\n' + layoutContent;
+  }
+  
+  // Add suppressHydrationWarning to html tag
+  layoutContent = layoutContent.replace(
+    /<html([^>]*)>/,
+    '<html$1 suppressHydrationWarning>'
+  );
+  
+  // Wrap children with ThemeProvider
+  if (layoutContent.includes('{children}')) {
+    layoutContent = layoutContent.replace(
+      '{children}',
+      `<ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>`
+    );
+  }
+  
+  fs.writeFileSync(layoutPath, layoutContent);
+  console.log(chalk.green("✅ Updated layout with theme provider"));
+}
+
 // Helper to create utils file
 export function createUtilsFile(useSrcDir: boolean, useTypeScript: boolean): void {
   const baseDir = useSrcDir ? "src" : "";

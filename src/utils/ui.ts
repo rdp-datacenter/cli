@@ -46,9 +46,11 @@ export function displayProjectSummary(config: ProjectConfig, projectStructure: P
   }
   
   if (config.shadcn && projectStructure.useTailwind) {
-    console.log(chalk.magenta(`\n🎨 Shadcn/ui is ready to use!`));
+    console.log(chalk.magenta(`\n🎨 Shadcn/ui is ready with theme support!`));
     console.log(chalk.dim(`  • Components are in ${projectStructure.useSrcDir ? 'src/' : ''}components/ui/`));
+    console.log(chalk.dim(`  • Theme provider configured with dark/light mode`));
     console.log(chalk.dim(`  • Add more: npx shadcn@latest add [component]`));
+    console.log(chalk.dim(`  • Toggle themes with next-themes hooks`));
   }
 
   // Configuration summary box

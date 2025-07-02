@@ -3,6 +3,7 @@ import path from "path";
 import chalk from "chalk";
 import type { ProjectConfig, ProjectStructure } from "../types/index.js";
 import { getInstallCommand, run, runInteractive } from "../utils/commands.js";
+import { createThemeProvider, updateLayoutWithThemeProvider } from "../generators/files.js";
 
 // Helper to setup shadcn/ui
 export async function setupShadcn(config: ProjectConfig, projectStructure: ProjectStructure): Promise<void> {
@@ -51,7 +52,20 @@ module.exports = {
     console.log(chalk.cyan("\n📦 Installing common components..."));
     run("npx shadcn@latest add button card input label", "Installing UI components");
     
-    console.log(chalk.green("✅ shadcn/ui setup complete!"));
+    // Install next-themes for dark/light mode support
+    console.log(chalk.cyan("\n🌙 Setting up theme support..."));
+    run(`${installCmd} next-themes`, "Installing next-themes");
+    
+    // Create theme provider component
+    createThemeProvider(projectStructure.useSrcDir, projectStructure.useTypeScript);
+    
+    // Update layout with theme provider
+    updateLayoutWithThemeProvider(projectStructure.useSrcDir, projectStructure.useTypeScript);
+    
+    console.log(chalk.green("✅ shadcn/ui setup complete with theme support!"));
+    console.log(chalk.dim("   • UI components installed"));
+    console.log(chalk.dim("   • Dark/light mode theme provider configured"));
+    console.log(chalk.dim("   • Layout updated with theme support"));
     
   } catch (error) {
     console.log(chalk.yellow("⚠️  shadcn/ui setup failed. You can set it up manually later."));
@@ -59,5 +73,6 @@ module.exports = {
     console.log(chalk.dim("   1. Create a minimal tailwind.config.js file"));
     console.log(chalk.dim("   2. Run: npx shadcn@latest init"));
     console.log(chalk.dim("   3. Install components with: npx shadcn@latest add [component-name]"));
+    console.log(chalk.dim("   4. Install next-themes for theme support"));
   }
 }
