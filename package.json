@@ -1,6 +1,6 @@
 {
   "name": "create-rdp-app",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "description": "A powerful CLI tool to create Next.js projects with shadcn/ui, NextAuth.js, Turbopack and more",
   "main": "dist/index.js",
