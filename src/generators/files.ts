@@ -238,3 +238,652 @@ export function createProjectStructure(useSrcDir: boolean, useTailwind: boolean,
   
   spinner.succeed("Project structure created");
 }
+
+// Helper to create custom homepage
+export function createCustomHomepage(useSrcDir: boolean, useTypeScript: boolean, useTailwind: boolean, useShadcn: boolean): void {
+  const spinner = ora("🏠 Creating custom homepage...").start();
+  
+  const baseDir = useSrcDir ? "src" : "";
+  const fileExtension = useTypeScript ? "tsx" : "jsx";
+  const pagePath = path.join(process.cwd(), baseDir, "app", `page.${fileExtension}`);
+  
+  // Create a modern, beautiful homepage
+  const customPageContent = useTypeScript ? 
+    createTypescriptHomepage(useTailwind, useShadcn) :
+    createJavascriptHomepage(useTailwind, useShadcn);
+  
+  fs.writeFileSync(pagePath, customPageContent);
+  spinner.succeed("Custom homepage created");
+}
+
+// TypeScript homepage template
+function createTypescriptHomepage(useTailwind: boolean, useShadcn: boolean): string {
+  const shadcnImports = useShadcn ? 'import { Button } from "@/components/ui/button"\nimport { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"' : '';
+  const lucideImports = useShadcn ? 'import { Github, Twitter, Mail, ExternalLink, Zap, Shield, Palette } from "lucide-react"' : '';
+  
+  if (useTailwind && useShadcn) {
+    return `${shadcnImports}
+${lucideImports}
+import Link from "next/link"
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-16 text-center">
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Welcome to Your
+            <br />
+            Next.js Project
+          </h1>
+          <p className="mx-auto max-w-[700px] text-muted-foreground text-lg md:text-xl">
+            Built with Next.js 15, TypeScript, Tailwind CSS, and shadcn/ui. 
+            Your modern web application starts here.
+          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <Button size="lg" className="gap-2">
+              <Zap className="h-4 w-4" />
+              Get Started
+            </Button>
+            <Button variant="outline" size="lg" className="gap-2">
+              <Github className="h-4 w-4" />
+              View on GitHub
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tighter md:text-4xl mb-4">
+            What's Included
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-[600px] mx-auto">
+            Everything you need to build modern web applications
+          </p>
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="relative overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Zap className="h-6 w-6 text-primary" />
+                <CardTitle>Next.js 15</CardTitle>
+              </div>
+              <CardDescription>
+                The latest version with App Router, Server Components, and Turbopack support
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          
+          <Card className="relative overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Palette className="h-6 w-6 text-primary" />
+                <CardTitle>shadcn/ui</CardTitle>
+              </div>
+              <CardDescription>
+                Beautiful, accessible components built with Radix UI and Tailwind CSS
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          
+          <Card className="relative overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Shield className="h-6 w-6 text-primary" />
+                <CardTitle>TypeScript</CardTitle>
+              </div>
+              <CardDescription>
+                Full type safety with the latest TypeScript features and strict mode
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </section>
+
+      {/* Quick Links Section */}
+      <section className="container mx-auto px-4 py-16">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Quick Links</CardTitle>
+            <CardDescription>
+              Essential resources to help you get started
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Link href="https://nextjs.org/docs" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full justify-between group">
+                  Next.js Docs
+                  <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="https://ui.shadcn.com" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full justify-between group">
+                  shadcn/ui Docs
+                  <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="https://tailwindcss.com/docs" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full justify-between group">
+                  Tailwind CSS
+                  <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="https://www.typescriptlang.org/docs" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full justify-between group">
+                  TypeScript Docs
+                  <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-muted-foreground">
+            <p>Built with ❤️ using create-rdp-app</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}`;
+  } else if (useTailwind) {
+    return `export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-16 text-center">
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Welcome to Your
+            <br />
+            Next.js Project
+          </h1>
+          <p className="mx-auto max-w-2xl text-gray-600 text-lg md:text-xl">
+            Built with Next.js 15, TypeScript, and Tailwind CSS. 
+            Your modern web application starts here.
+          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+              Get Started
+            </button>
+            <button className="border border-gray-300 hover:border-gray-400 px-8 py-3 rounded-lg font-medium transition-colors">
+              Learn More
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
+            What's Included
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Everything you need to build modern web applications
+          </p>
+        </div>
+        
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="bg-white p-6 rounded-xl shadow-sm border">
+            <h3 className="text-xl font-semibold mb-2">⚡ Next.js 15</h3>
+            <p className="text-gray-600">
+              The latest version with App Router, Server Components, and Turbopack support
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-sm border">
+            <h3 className="text-xl font-semibold mb-2">🎨 Tailwind CSS</h3>
+            <p className="text-gray-600">
+              Utility-first CSS framework for rapid UI development
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-sm border">
+            <h3 className="text-xl font-semibold mb-2">🛡️ TypeScript</h3>
+            <p className="text-gray-600">
+              Full type safety with the latest TypeScript features
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-gray-600">
+            <p>Built with ❤️ using create-rdp-app</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}`;
+  } else {
+    return `export default function HomePage() {
+  return (
+    <div style={{ minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
+      {/* Hero Section */}
+      <section style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+        <h1 style={{ 
+          fontSize: '3rem', 
+          fontWeight: 'bold', 
+          marginBottom: '1rem',
+          background: 'linear-gradient(to right, #3b82f6, #8b5cf6)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
+        }}>
+          Welcome to Your Next.js Project
+        </h1>
+        <p style={{ 
+          fontSize: '1.25rem', 
+          color: '#666', 
+          marginBottom: '2rem',
+          maxWidth: '600px',
+          margin: '0 auto 2rem auto'
+        }}>
+          Built with Next.js 15 and TypeScript. Your modern web application starts here.
+        </p>
+        <button style={{
+          background: '#3b82f6',
+          color: 'white',
+          padding: '0.75rem 2rem',
+          border: 'none',
+          borderRadius: '0.5rem',
+          fontSize: '1rem',
+          fontWeight: '500',
+          cursor: 'pointer',
+          marginRight: '1rem'
+        }}>
+          Get Started
+        </button>
+        <button style={{
+          background: 'transparent',
+          color: '#3b82f6',
+          padding: '0.75rem 2rem',
+          border: '1px solid #3b82f6',
+          borderRadius: '0.5rem',
+          fontSize: '1rem',
+          fontWeight: '500',
+          cursor: 'pointer'
+        }}>
+          Learn More
+        </button>
+      </section>
+
+      {/* Features Section */}
+      <section style={{ padding: '4rem 1rem', backgroundColor: '#f9fafb' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+            What's Included
+          </h2>
+          <p style={{ fontSize: '1.125rem', color: '#666' }}>
+            Everything you need to build modern web applications
+          </p>
+        </div>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gap: '2rem',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          <div style={{ 
+            background: 'white', 
+            padding: '2rem', 
+            borderRadius: '0.75rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              ⚡ Next.js 15
+            </h3>
+            <p style={{ color: '#666' }}>
+              The latest version with App Router, Server Components, and Turbopack support
+            </p>
+          </div>
+          
+          <div style={{ 
+            background: 'white', 
+            padding: '2rem', 
+            borderRadius: '0.75rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              🛡️ TypeScript
+            </h3>
+            <p style={{ color: '#666' }}>
+              Full type safety with the latest TypeScript features
+            </p>
+          </div>
+          
+          <div style={{ 
+            background: 'white', 
+            padding: '2rem', 
+            borderRadius: '0.75rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              🚀 Modern Stack
+            </h3>
+            <p style={{ color: '#666' }}>
+              Built with the latest web technologies and best practices
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ borderTop: '1px solid #e5e7eb', padding: '2rem 1rem', textAlign: 'center' }}>
+        <p style={{ color: '#666' }}>Built with ❤️ using create-rdp-app</p>
+      </footer>
+    </div>
+  )
+}`;
+  }
+}
+
+// JavaScript homepage template
+function createJavascriptHomepage(useTailwind: boolean, useShadcn: boolean): string {
+  const shadcnImports = useShadcn ? 'import { Button } from "@/components/ui/button"\nimport { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"' : '';
+  const lucideImports = useShadcn ? 'import { Github, Twitter, Mail, ExternalLink, Zap, Shield, Palette } from "lucide-react"' : '';
+  
+  if (useTailwind && useShadcn) {
+    return `${shadcnImports}
+${lucideImports}
+import Link from "next/link"
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-16 text-center">
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Welcome to Your
+            <br />
+            Next.js Project
+          </h1>
+          <p className="mx-auto max-w-[700px] text-muted-foreground text-lg md:text-xl">
+            Built with Next.js 15, JavaScript, Tailwind CSS, and shadcn/ui. 
+            Your modern web application starts here.
+          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <Button size="lg" className="gap-2">
+              <Zap className="h-4 w-4" />
+              Get Started
+            </Button>
+            <Button variant="outline" size="lg" className="gap-2">
+              <Github className="h-4 w-4" />
+              View on GitHub
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tighter md:text-4xl mb-4">
+            What's Included
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-[600px] mx-auto">
+            Everything you need to build modern web applications
+          </p>
+        </div>
+        
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="relative overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Zap className="h-6 w-6 text-primary" />
+                <CardTitle>Next.js 15</CardTitle>
+              </div>
+              <CardDescription>
+                The latest version with App Router, Server Components, and Turbopack support
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          
+          <Card className="relative overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Palette className="h-6 w-6 text-primary" />
+                <CardTitle>shadcn/ui</CardTitle>
+              </div>
+              <CardDescription>
+                Beautiful, accessible components built with Radix UI and Tailwind CSS
+              </CardDescription>
+            </CardHeader>
+          </Card>
+          
+          <Card className="relative overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Shield className="h-6 w-6 text-primary" />
+                <CardTitle>JavaScript</CardTitle>
+              </div>
+              <CardDescription>
+                Modern JavaScript with the latest features and ES modules
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-muted-foreground">
+            <p>Built with ❤️ using create-rdp-app</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}`;
+  } else if (useTailwind) {
+    return `export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-16 text-center">
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Welcome to Your
+            <br />
+            Next.js Project
+          </h1>
+          <p className="mx-auto max-w-2xl text-gray-600 text-lg md:text-xl">
+            Built with Next.js 15, JavaScript, and Tailwind CSS. 
+            Your modern web application starts here.
+          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+              Get Started
+            </button>
+            <button className="border border-gray-300 hover:border-gray-400 px-8 py-3 rounded-lg font-medium transition-colors">
+              Learn More
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
+            What's Included
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Everything you need to build modern web applications
+          </p>
+        </div>
+        
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="bg-white p-6 rounded-xl shadow-sm border">
+            <h3 className="text-xl font-semibold mb-2">⚡ Next.js 15</h3>
+            <p className="text-gray-600">
+              The latest version with App Router, Server Components, and Turbopack support
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-sm border">
+            <h3 className="text-xl font-semibold mb-2">🎨 Tailwind CSS</h3>
+            <p className="text-gray-600">
+              Utility-first CSS framework for rapid UI development
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-xl shadow-sm border">
+            <h3 className="text-xl font-semibold mb-2">📱 JavaScript</h3>
+            <p className="text-gray-600">
+              Modern JavaScript with the latest features and ES modules
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-gray-600">
+            <p>Built with ❤️ using create-rdp-app</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}`;
+  } else {
+    return `export default function HomePage() {
+  return (
+    <div style={{ minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
+      {/* Hero Section */}
+      <section style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+        <h1 style={{ 
+          fontSize: '3rem', 
+          fontWeight: 'bold', 
+          marginBottom: '1rem',
+          background: 'linear-gradient(to right, #3b82f6, #8b5cf6)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
+        }}>
+          Welcome to Your Next.js Project
+        </h1>
+        <p style={{ 
+          fontSize: '1.25rem', 
+          color: '#666', 
+          marginBottom: '2rem',
+          maxWidth: '600px',
+          margin: '0 auto 2rem auto'
+        }}>
+          Built with Next.js 15 and JavaScript. Your modern web application starts here.
+        </p>
+        <button style={{
+          background: '#3b82f6',
+          color: 'white',
+          padding: '0.75rem 2rem',
+          border: 'none',
+          borderRadius: '0.5rem',
+          fontSize: '1rem',
+          fontWeight: '500',
+          cursor: 'pointer',
+          marginRight: '1rem'
+        }}>
+          Get Started
+        </button>
+        <button style={{
+          background: 'transparent',
+          color: '#3b82f6',
+          padding: '0.75rem 2rem',
+          border: '1px solid #3b82f6',
+          borderRadius: '0.5rem',
+          fontSize: '1rem',
+          fontWeight: '500',
+          cursor: 'pointer'
+        }}>
+          Learn More
+        </button>
+      </section>
+
+      {/* Features Section */}
+      <section style={{ padding: '4rem 1rem', backgroundColor: '#f9fafb' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+            What's Included
+          </h2>
+          <p style={{ fontSize: '1.125rem', color: '#666' }}>
+            Everything you need to build modern web applications
+          </p>
+        </div>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gap: '2rem',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          <div style={{ 
+            background: 'white', 
+            padding: '2rem', 
+            borderRadius: '0.75rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              ⚡ Next.js 15
+            </h3>
+            <p style={{ color: '#666' }}>
+              The latest version with App Router, Server Components, and Turbopack support
+            </p>
+          </div>
+          
+          <div style={{ 
+            background: 'white', 
+            padding: '2rem', 
+            borderRadius: '0.75rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              📱 JavaScript
+            </h3>
+            <p style={{ color: '#666' }}>
+              Modern JavaScript with the latest features and ES modules
+            </p>
+          </div>
+          
+          <div style={{ 
+            background: 'white', 
+            padding: '2rem', 
+            borderRadius: '0.75rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+          }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+              🚀 Modern Stack
+            </h3>
+            <p style={{ color: '#666' }}>
+              Built with the latest web technologies and best practices
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ borderTop: '1px solid #e5e7eb', padding: '2rem 1rem', textAlign: 'center' }}>
+        <p style={{ color: '#666' }}>Built with ❤️ using create-rdp-app</p>
+      </footer>
+    </div>
+  )
+}`;
+  }
+}

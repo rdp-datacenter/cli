@@ -6,7 +6,7 @@ import { displayBanner, displayProjectSummary, displayProjectAnalysis } from "./
 import { getBasicProjectInfo, getFeatureOptions } from "./utils/prompts.js";
 import { runInteractive, getInstallCommand, run } from "./utils/commands.js";
 import { detectProjectStructure } from "./utils/detector.js";
-import { createProjectStructure } from "./generators/files.js";
+import { createProjectStructure, createCustomHomepage } from "./generators/files.js";
 import { setupShadcn } from "./setup/shadcn.js";
 import { setupNextAuth } from "./setup/nextauth.js";
 
@@ -43,6 +43,10 @@ async function main(): Promise<void> {
     displayProjectAnalysis(projectStructure);
 
     createProjectStructure(projectStructure.useSrcDir, projectStructure.useTailwind, projectStructure.useTypeScript);
+    
+    // Create custom homepage (always enabled for now)
+    createCustomHomepage(projectStructure.useSrcDir, projectStructure.useTypeScript, projectStructure.useTailwind, config.shadcn);
+    
     await setupShadcn(config, projectStructure);
     setupNextAuth(config, projectStructure);
 
