@@ -2,6 +2,9 @@
 
 A powerful CLI tool to quickly scaffold Next.js projects with popular features like shadcn/ui, NextAuth.js, and Turbopack. Built with TypeScript and designed to work seamlessly with Next.js 15 and Tailwind CSS v4.
 
+[![npm version](https://img.shields.io/npm/v/create-rdp-app.svg)](https://www.npmjs.com/package/create-rdp-app)
+[![npm downloads](https://img.shields.io/npm/dm/create-rdp-app.svg)](https://www.npmjs.com/package/create-rdp-app)
+
 ## ✨ Features
 
 - 🎯 **Interactive Setup** - Uses the official `create-next-app` for base project creation
