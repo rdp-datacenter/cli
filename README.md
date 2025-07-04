@@ -4,6 +4,7 @@ A powerful CLI tool to quickly scaffold Next.js projects with popular features l
 
 [![npm version](https://img.shields.io/npm/v/create-rdp-app.svg)](https://www.npmjs.com/package/create-rdp-app)
 [![npm downloads](https://img.shields.io/npm/dm/create-rdp-app.svg)](https://www.npmjs.com/package/create-rdp-app)
+[![Build](https://github.com/rdp-datacenter/cli/actions/workflows/publish.yml/badge.svg)](https://github.com/rdp-datacenter/cli/actions/workflows/publish.yml)
 
 ## ✨ Features
 
